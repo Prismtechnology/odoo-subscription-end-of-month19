@@ -21,32 +21,23 @@ class SaleOrderLineInherit(models.Model):
             self.order_id.plan_id and 
             (self.recurring_invoice or self.order_id.subscription_state == '7_upsell')):
             
-            # Calculate the billing period based on the plan
-            billing_period_value = self.order_id.plan_id.billing_period_value or 1
-            billing_period_unit = self.order_id.plan_id.billing_period_unit or 'month'
-            next_invoice_date = self.order_id.next_invoice_date or fields.Date.today()
-            
-            # Calculate period_end (last day of current billing month)
-            period_end_month = next_invoice_date
-            last_day = calendar.monthrange(period_end_month.year, period_end_month.month)[1]
-            period_end = period_end_month.replace(day=last_day)
-            
-            # Calculate period_start based on billing period
-            if billing_period_unit == 'day':
-                period_start = period_end - timedelta(days=billing_period_value - 1)
-            elif billing_period_unit == 'week':
-                period_start = period_end - timedelta(weeks=billing_period_value)
-                period_start = period_start.replace(day=1)  # Start at 1st of month
-            elif billing_period_unit == 'month':
-                # Go back X months from period_end and start at 1st of that month
-                temp_start = period_end - relativedelta(months=billing_period_value - 1)
-                period_start = temp_start.replace(day=1)
-            elif billing_period_unit == 'year':
-                temp_start = period_end - relativedelta(years=billing_period_value)
-                period_start = temp_start.replace(day=1)
+            # Use next_invoice_date to determine which month to bill
+            next_invoice_date = self.order_id.next_invoice_date
+            if next_invoice_date:
+                # For current_month, we bill for the month of the next_invoice_date
+                # Example: if next_invoice_date is 30/06/2025, we bill for June 2025 (01/06 to 30/06)
+                target_month = next_invoice_date
+                
+                # Get the first and last day of the target month
+                period_start = target_month.replace(day=1)
+                last_day_of_month = calendar.monthrange(target_month.year, target_month.month)[1]
+                period_end = target_month.replace(day=last_day_of_month)
             else:
-                # Fallback: 1 month
-                period_start = period_end.replace(day=1)
+                # Fallback: use current month if no next_invoice_date
+                today = fields.Date.today()
+                period_start = today.replace(day=1)
+                last_day_of_month_num = calendar.monthrange(today.year, today.month)[1]
+                period_end = today.replace(day=last_day_of_month_num)
             
             # Get the original description without the period part
             description = res.get('name') or self.name

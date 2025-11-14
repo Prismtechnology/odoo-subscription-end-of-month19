@@ -39,13 +39,11 @@ class AccountMoveInherit(models.Model):
         result = super()._post(soft=soft)
         
         # After invoice posting, calculate next_invoice_date using billing period
-        # ONLY for current_month timing mode
         for move in self:
             if move.invoice_origin:
                 subscription = self.env['sale.order'].search([
                     ('name', '=', move.invoice_origin),
-                    ('plan_id', '!=', False),
-                    ('invoice_timing', '=', 'current_month')
+                    ('plan_id', '!=', False)
                 ], limit=1)
                 
                 if subscription and subscription.plan_id:

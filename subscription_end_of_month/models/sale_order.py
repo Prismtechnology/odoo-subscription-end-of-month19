@@ -62,8 +62,8 @@ class SaleOrderInherit(models.Model):
 
     def _prepare_next_invoice_date(self, subscription_plan, period_start):
         """Override to calculate next invoice date based on billing period from plan."""
-        # Apply custom logic ONLY for current_month timing mode
-        if self.plan_id and subscription_plan and self.invoice_timing == 'current_month':
+        # Apply custom logic for all subscription orders
+        if self.plan_id and subscription_plan:
             
             # Get billing period from the plan
             billing_period_value = subscription_plan.billing_period_value or 1
@@ -100,8 +100,8 @@ class SaleOrderInherit(models.Model):
 
     def _update_next_invoice_date(self):
         """Override to calculate next invoice date based on billing period from plan."""
-        # Process subscription orders with custom logic ONLY for current_month timing
-        for order in self.filtered(lambda o: o.plan_id and o.invoice_timing == 'current_month'):
+        # Process subscription orders with custom logic
+        for order in self.filtered(lambda o: o.plan_id):
             val = order.plan_id.billing_period_value or 1
             unit = (order.plan_id.billing_period_unit or 'month').lower()
             base = order.next_invoice_date or fields.Date.today()
@@ -128,10 +128,10 @@ class SaleOrderInherit(models.Model):
             order.next_invoice_date = next_date
             order.last_reminder_date = False
                 
-        # Process orders with standard logic (non-subscription OR regular timing)
-        standard_orders = self.filtered(lambda o: not o.plan_id or o.invoice_timing != 'current_month')
-        if standard_orders:
-            super(SaleOrderInherit, standard_orders)._update_next_invoice_date()
+        # Process non-subscription orders with standard logic
+        non_subscription_orders = self.filtered(lambda o: not o.plan_id)
+        if non_subscription_orders:
+            super(SaleOrderInherit, non_subscription_orders)._update_next_invoice_date()
     
     #####################################################
     #                     Actions                       #
