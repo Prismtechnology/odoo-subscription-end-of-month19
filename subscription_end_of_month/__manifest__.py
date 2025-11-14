@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Subscription End of Month Invoicing',
-    'version': '1.21',
+    'version': '1.1.1',
     'summary': 'Invoice subscriptions at the end of month for the current month period',
     'description': """
 🗓️ **Professional End-of-Month Subscription Billing**
