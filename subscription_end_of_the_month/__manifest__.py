@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Subscription End of the Month',
-    'version': '1.1.1',
+    'version': '1.1.é',
     'summary': 'Invoice subscriptions at the end of month for the current month period',
     'description': """
 Allows you to invoice subscriptions at the end of the month for the current month period.
