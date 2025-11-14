@@ -13,6 +13,7 @@ Allows you to invoice subscriptions at the end of the month for the current mont
     'price': 39.00,
     'currency': 'EUR',
     'support': 'nicolas.b.95@hotmail.com',
+    'images': ['images/main_screenshot.png'],
     'depends': ['sale_subscription'],
     'data': [
         'views/sale_order_views.xml',
