@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 {
-    'name': 'Subscription End of Month Invoicing',
+    'name': 'Subscription End of the Month',
     'version': '1.1.1',
     'summary': 'Invoice subscriptions at the end of month for the current month period',
     'description': """
